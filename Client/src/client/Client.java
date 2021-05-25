@@ -1,0 +1,295 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package client;
+
+import jogada.Jogada;
+import com.sun.security.ntlm.Server;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.net.Socket;
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.*;
+
+/**
+ *
+ * @author MateusR
+ */
+public class Client extends JFrame{
+
+    /**
+     * @param args the command line arguments
+     */
+    
+    private static OutputStream outputStream;
+    private static ObjectOutputStream objectOutputStream;
+    
+    private Socket socket;
+    private OutputStream ou ;
+    private Writer ouw;
+    private BufferedWriter bfw;
+    
+    private String nome_jogador;
+    private String simbolo;
+    
+    JButton[] buttons = new JButton[9];
+    JLabel jogador_atual = new JLabel("Nenhum jogador");
+    
+    public Client(){
+        
+        JLabel lblMessage = new JLabel("Olá, insira seu nome :D");
+        JTextField txtNome = new JTextField("");
+        JTextField txtSimbolo = new JTextField("O");
+        Object[] texts = {lblMessage, txtNome, txtSimbolo };
+        JOptionPane.showMessageDialog(null, texts);
+        this.nome_jogador = txtNome.getText();
+        this.simbolo = txtSimbolo.getText();
+        //System.out.println(txtNome.getText());
+        
+        setVisible(true);
+        setTitle("Jogo da Velha - Projeto Redes I");
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLayout(null);
+        setBounds(300,300,600,400);
+        
+        JLabel textJogador = new JLabel("Ultimo jogador:");
+        add(textJogador);
+        add(jogador_atual);
+        textJogador.setBounds(400,50,100,30);
+        jogador_atual.setBounds(400, 75, 100, 30);
+        //Variável para definir a posição dos botões na tela
+        int position_buttons = 0;
+        
+        //For percorre a linha para preencher com botões
+        for(int i = 0; i < 3; i++){
+            //Para cada linha, preenche uma coluna com botões
+            for(int j = 0 ; j < 3; j++){
+                buttons[position_buttons] = new JButton();
+                buttons[position_buttons].setFont(new Font("Arial", Font.BOLD, 40));
+                buttons[position_buttons].setBounds((100 * i) + 20, (100 * j) + 20, 95, 95);
+                add(buttons[position_buttons]);
+                position_buttons++;
+            }
+        }
+        
+        buttons[0].addActionListener((ActionEvent ae) -> {
+            try {
+                enviarMensagem("0", 0);
+            } catch (IOException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        
+        buttons[1].addActionListener((ActionEvent ae) -> {
+            try {
+                enviarMensagem("1", 1);
+            } catch (IOException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        
+        buttons[2].addActionListener((ActionEvent ae) -> {
+            try {
+                enviarMensagem("2", 2);
+            } catch (IOException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        
+        buttons[3].addActionListener((ActionEvent ae) -> {
+            try {
+                enviarMensagem("3", 3);
+            } catch (IOException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        
+        buttons[4].addActionListener((ActionEvent ae) -> {
+            try {
+                enviarMensagem("4", 4);
+            } catch (IOException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        
+        buttons[5].addActionListener((ActionEvent ae) -> {
+            try {
+                enviarMensagem("5", 5);
+            } catch (IOException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        
+        buttons[6].addActionListener((ActionEvent ae) -> {
+            try {
+                enviarMensagem("6", 6);
+            } catch (IOException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        
+        buttons[7].addActionListener((ActionEvent ae) -> {
+            try {
+                enviarMensagem("7", 7);
+            } catch (IOException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        
+        buttons[8].addActionListener((ActionEvent ae) -> {
+            try {
+                enviarMensagem("8", 8);
+            } catch (IOException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        
+    }
+    
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
+        // TODO code application logic here
+        
+        Client c = new Client();
+        c.connect();
+        c.escutar();
+        
+    }
+    
+    private void connect(){
+        
+        try {
+        
+            socket = new Socket("172.17.176.1", 1234);
+            outputStream = socket.getOutputStream();
+            //objectOutputStream = new ObjectOutputStream(outputStream);
+            //objectOutputStream.flush();
+            ouw = new OutputStreamWriter(outputStream);
+            bfw = new BufferedWriter(ouw);
+            //objectOutputStream = new ObjectOutputStream(outputStream);
+            //objectOutputStream.flush();
+            //bfw.write("Olá servidor");
+            bfw.flush();
+            
+            //objectOutputStream.writeObject("Olá servidor");
+            //objectOutputStream.close();
+            //clientSocket.close(); 
+            //String msg = "Olá servidor";
+            //enviarMensagem(msg);
+            
+       
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        
+    }
+    
+    public void enviarMensagem(String msg, int position) throws IOException{
+        
+        //bfw.write(msg);
+        
+        String jogador_atual = nome_jogador;
+        String simbolo_atual = simbolo;
+        String posicao = String.valueOf(position);
+        
+        String enviar = jogador_atual + "_" + simbolo_atual + "_" + posicao;
+        
+        bfw.write(enviar + "\r");
+        bfw.flush();
+        
+        /*if(msg.equals("Sair")){
+          bfw.write("Desconectado \r\n");
+          //texto.append("Desconectado \r\n");
+        }else{
+          
+          //texto.append( txtNome.getText() + " diz -> " +         txtMsg.getText()+"\r\n");
+        }
+         
+         //txtMsg.setText("");*/
+        
+        
+    }
+    
+    public void escutar() throws IOException, ClassNotFoundException{
+
+        InputStream in = socket.getInputStream();
+        InputStreamReader inr = new InputStreamReader(in);
+        BufferedReader bfr = new BufferedReader(inr);
+        //ObjectInputStream oin = new ObjectInputStream(in);
+        String msg = "";
+        String[] args;
+        
+        //Jogada jogada;
+        //msg = bfr.readLine();
+        //System.out.println(msg);  
+        
+        
+        while(!"Sair".equalsIgnoreCase(msg)){
+            
+            if(bfr.ready()){
+                msg = bfr.readLine();
+                
+                if(msg.equals("X ganhou") || msg.equals("O ganhou")){
+                    JLabel lblMessage = new JLabel(msg);
+                    JOptionPane.showMessageDialog(null, lblMessage);
+                    limpar();
+                }else{
+                    System.out.println(msg);
+
+                    args = msg.split("_");
+                    int positionButton = Integer.parseInt(args[2]);
+                    System.out.println(args[2]);
+
+                    String jogador = args[0];
+                    System.out.println(jogador);
+
+                    String simboloo = args[1];
+                    System.out.println(simboloo);              
+
+                    buttons[positionButton].setText(simboloo);
+                    jogador_atual.setText(jogador);
+                }
+                
+                if(msg.equals("Sair")){
+
+                }
+               }else{
+                 //texto.append(msg+"\r\n");
+               }
+
+            
+        }
+
+            
+    }
+    
+    public void sair() throws IOException{
+
+        enviarMensagem("Sair", 0);
+        bfw.close();
+        ouw.close();
+        ou.close();
+        socket.close();
+    }
+
+    private void limpar() {
+        for(int i = 0; i < 9; i++){
+            buttons[i].setText("");            
+        }
+    }
+    
+}
