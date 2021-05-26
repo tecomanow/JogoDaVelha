@@ -5,7 +5,6 @@
  */
 package servidor;
 
-import jogada.Jogada;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -22,7 +21,9 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import javax.print.DocFlavor;
-
+import client.Jogada;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 /**
  *
  * @author MateusR
@@ -36,14 +37,15 @@ public class Servidor extends Thread{
     
     //Declaring streams to use by server
     private static ArrayList<BufferedWriter> clients;
-    //private static ArrayList<ObjectOutputStream> jogadas;
+    private static ArrayList<Jogada> jogadas_obg;
     private static ServerSocket server;
     private String name;
     private Socket connection;
     private InputStream in;
     private InputStreamReader inreader;
     private BufferedReader bfreader;
-    private ObjectInputStream objectInputStream;
+    //private ObjectInputStream objectInputStream;
+  
     
     private boolean X_ou_O = false;
     //private String jogador = "Jogador 2_X";
@@ -52,6 +54,9 @@ public class Servidor extends Thread{
     private static boolean[] clicks_positions = new boolean[9];
     private static String[] jogadas = new String[9];
     private static String[] simbolos = new String[9];
+    private static String[] jogadores = new String[9];
+    
+    private String last_player = "";
     
     public Servidor(Socket s){
         this.connection = s;
@@ -63,6 +68,7 @@ public class Servidor extends Thread{
             //objectInputStream = new ObjectInputStream(in);
             
         }catch (Exception e){
+            System.out.println("Error: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -72,10 +78,10 @@ public class Servidor extends Thread{
         
         try {
             
-            server = new ServerSocket(1234);
+            server = new ServerSocket(1478);
             clients = new ArrayList<>(2);         
-            
             clearClicks();
+            
             //jogadas = new ArrayList<>();
             
             while(true){
@@ -107,19 +113,18 @@ public class Servidor extends Thread{
             Writer ouw = new OutputStreamWriter(ou);
             BufferedWriter bfw = new BufferedWriter(ouw);
             //ObjectOutputStream objectOutputStream = new ObjectOutputStream(ou);
-            
+
             clients.add(bfw);
-            //jogadas.add(objectOutputStream);
-            //msg = (String)objectInputStream.readObject();
+            msg = bfreader.readLine();
             //Jogada jogada = (Jogada)objectInputStream.readObject();
-            name = msg = bfreader.readLine();
-            //sendToAll(bfw, msg, jogada);
-            //System.out.println(jogada.getNome_jogador());
-            //System.out.println(msg);
-            //System.out.println(msg);
-            //
-            //System.out.println(msg);
-            //sendToAll(bfw, msg);
+                     
+            
+            /*while(jogada != null){
+                
+                System.out.println(jogada.getNome_jogador());
+                System.out.println(jogada.getPosicao_click());
+               
+            }*/
 
             while(msg != null){
                 
@@ -131,8 +136,7 @@ public class Servidor extends Thread{
                 int positionButton = Integer.parseInt(args[2]);               
                 String jogador = args[0];                
                 String simboloo = args[1];
-                                
-                
+                            
                 if(clicks_positions[positionButton] == false){                                      
                     
                     msg_enviar = jogador + "_" + simboloo + "_" + positionButton;                        
@@ -141,15 +145,13 @@ public class Servidor extends Thread{
                     clicks_positions[positionButton] = true;
                     jogadas[positionButton] = jogador;
                     simbolos[positionButton] = simboloo;
+                                   
+                                     
                     
                     checkWinner();
                     
                 }
-                //System.out.println(positionButton + jogador + simboloo);
-
-                
-                //trocarJogador();
-                //System.out.println(msg);
+               
             }
 
         }catch (IOException | NumberFormatException e) {
@@ -159,20 +161,23 @@ public class Servidor extends Thread{
     
     public void sendToAll(BufferedWriter bwExit, String msg) throws  IOException{
         
-        BufferedWriter bwE;
+        //BufferedWriter bwE;
 
         for(BufferedWriter bw : clients){
-            bwE = (BufferedWriter)bw;
-            //if(!(bwExit == bwE)){
+            //bwE = (BufferedWriter)bw;
             bw.write(msg + "\r");
-            //bw.write(msg + "_" + jogador + "\r");
-              //System.out.println(name + " -> " + msg+"\r\n");
             bw.flush();
-            //}
         }
 }
     
     private void checkWinner() throws IOException{
+        
+        int count = 0;
+        for (int i = 0; i < 9; i++){
+            if(clicks_positions[i] == true){
+                count++;
+            }
+        }
         
         if(simbolos[0].equals("X") && simbolos[3].equals("X") && simbolos[6].equals("X")
             || simbolos[0].equals("X") && simbolos[1].equals("X") && simbolos[2].equals("X")
@@ -188,7 +193,7 @@ public class Servidor extends Thread{
             sendToAll(null, "X ganhou");
         }
         
-        if(simbolos[0].equals("O") && simbolos[3].equals("O") && simbolos[6].equals("o")
+        else if(simbolos[0].equals("O") && simbolos[3].equals("O") && simbolos[6].equals("o")
             || simbolos[0].equals("O") && simbolos[1].equals("O") && simbolos[2].equals("O")
             || simbolos[0].equals("O") && simbolos[4].equals("O") && simbolos[8].equals("O")
             || simbolos[1].equals("O") && simbolos[4].equals("O") && simbolos[7].equals("O")
@@ -202,6 +207,11 @@ public class Servidor extends Thread{
             sendToAll(null, "O ganhou");
         }
         
+        else if(count == 9){
+            clearClicks();
+            sendToAll(null, "Empate");
+        }
+        
     }
     
     private static void clearClicks(){
@@ -209,22 +219,12 @@ public class Servidor extends Thread{
         for(int i = 0; i < 9; i++){
             clicks_positions[i] = false;
             jogadas[i] = "";
-            simbolos[i] = "";
-        }
-        
-    }
-    
-    /*private void trocarJogador(){
-        
-        if(X_ou_O){
-            simbolo = "O";
-            X_ou_O = false;           
-        }else{
-            simbolo = "X";
-            X_ou_O = true;
+            simbolos[i] = "";    
+            //System.out.println(jogadores[i]);
+            jogadores[i] = "";
             
-        }
-
-    };*/
+        }              
+        
+    }    
     
 }

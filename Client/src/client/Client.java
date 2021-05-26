@@ -5,7 +5,6 @@
  */
 package client;
 
-import jogada.Jogada;
 import com.sun.security.ntlm.Server;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -37,7 +36,7 @@ public class Client extends JFrame{
      */
     
     private static OutputStream outputStream;
-    private static ObjectOutputStream objectOutputStream;
+    //private static ObjectOutputStream objectOutputStream;
     
     private Socket socket;
     private OutputStream ou ;
@@ -47,8 +46,8 @@ public class Client extends JFrame{
     private String nome_jogador;
     private String simbolo;
     
-    JButton[] buttons = new JButton[9];
-    JLabel jogador_atual = new JLabel("Nenhum jogador");
+    private JButton[] buttons = new JButton[9];
+    private JLabel jogador_atual = new JLabel("Nenhum jogador");
     
     public Client(){
         
@@ -174,13 +173,13 @@ public class Client extends JFrame{
         
         try {
         
-            socket = new Socket("172.17.176.1", 1234);
+            socket = new Socket("10.100.15.206", 1478);
             outputStream = socket.getOutputStream();
             //objectOutputStream = new ObjectOutputStream(outputStream);
             //objectOutputStream.flush();
             ouw = new OutputStreamWriter(outputStream);
             bfw = new BufferedWriter(ouw);
-            //objectOutputStream = new ObjectOutputStream(outputStream);
+            // objectOutputStream = new ObjectOutputStream(outputStream);
             //objectOutputStream.flush();
             //bfw.write("Olá servidor");
             bfw.flush();
@@ -192,7 +191,7 @@ public class Client extends JFrame{
             //enviarMensagem(msg);
             
        
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.out.println(e.getMessage());
         }
         
@@ -207,6 +206,14 @@ public class Client extends JFrame{
         String posicao = String.valueOf(position);
         
         String enviar = jogador_atual + "_" + simbolo_atual + "_" + posicao;
+        
+        //Jogada j = new Jogada();
+        //j.setNome_jogador(nome_jogador);
+        //j.setPosicao_click(position);
+        //j.setSimbolo(simbolo);
+        
+        //objectOutputStream.writeObject(j);
+        //objectOutputStream.flush();
         
         bfw.write(enviar + "\r");
         bfw.flush();
@@ -233,7 +240,7 @@ public class Client extends JFrame{
         String msg = "";
         String[] args;
         
-        //Jogada jogada;
+        //Jogada jogada = (Jogada)ObjectInputStream.readO;
         //msg = bfr.readLine();
         //System.out.println(msg);  
         
@@ -244,6 +251,10 @@ public class Client extends JFrame{
                 msg = bfr.readLine();
                 
                 if(msg.equals("X ganhou") || msg.equals("O ganhou")){
+                    JLabel lblMessage = new JLabel(msg);
+                    JOptionPane.showMessageDialog(null, lblMessage);
+                    limpar();
+                }else if(msg.equals("Empate")){
                     JLabel lblMessage = new JLabel(msg);
                     JOptionPane.showMessageDialog(null, lblMessage);
                     limpar();
@@ -270,11 +281,9 @@ public class Client extends JFrame{
                }else{
                  //texto.append(msg+"\r\n");
                }
-
-            
+        
         }
-
-            
+         
     }
     
     public void sair() throws IOException{
