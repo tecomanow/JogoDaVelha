@@ -47,31 +47,65 @@ public class Client extends JFrame{
     private String simbolo;
     
     private JButton[] buttons = new JButton[9];
-    private JLabel jogador_atual = new JLabel("Nenhum jogador");
+    private JLabel ultimo_jogador = new JLabel("Nenhum jogador");
+    
+    private JLabel placarX = new JLabel("X: 0");  
+    private JLabel placarO = new JLabel("O: 0");
+    /*private JLabel placarX_valor = new JLabel("2");
+    private JLabel placarO_valor = new JLabel("3");*/
     
     public Client(){
         
         JLabel lblMessage = new JLabel("Olá, insira seu nome :D");
         JTextField txtNome = new JTextField("");
-        JTextField txtSimbolo = new JTextField("O");
-        Object[] texts = {lblMessage, txtNome, txtSimbolo };
+        //JTextField txtSimbolo = new JTextField("");
+        JButton btn_x = new JButton("X");
+        JButton btn_o = new JButton("O");
+        
+        btn_x.addActionListener((ActionEvent ae) -> {
+            System.out.println(btn_x.getText());
+            btn_o.setEnabled(false);
+            this.simbolo = "X";
+        });
+        
+        btn_o.addActionListener(((ae) -> {
+            System.out.println(btn_o.getText());
+            btn_x.setEnabled(false);
+            this.simbolo = "O";
+        }));
+        
+        Object[] texts = {lblMessage, txtNome, btn_x, btn_o };
         JOptionPane.showMessageDialog(null, texts);
         this.nome_jogador = txtNome.getText();
-        this.simbolo = txtSimbolo.getText();
+        //this.simbolo = "X";
         //System.out.println(txtNome.getText());
         
         setVisible(true);
         setTitle("Jogo da Velha - Projeto Redes I");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(null);
-        setBounds(300,300,600,400);
+        setBounds(300,300,800,500);
         
         JLabel textJogador = new JLabel("Ultimo jogador:");
         add(textJogador);
-        add(jogador_atual);
+        add(ultimo_jogador);
         textJogador.setBounds(400,50,100,30);
-        jogador_atual.setBounds(400, 75, 100, 30);
+        ultimo_jogador.setBounds(400, 75, 100, 30);
+        
+        JLabel textPlacar = new JLabel("Placar");
+        add(textPlacar);
+        textPlacar.setBounds(400, 125, 100, 30);
+        
+        
+        add(placarX);
+        placarX.setBounds(400, 150, 100, 30);
+                 
+        
+        add(placarO);
+        placarO.setBounds(480, 150, 100, 30);
+
         //Variável para definir a posição dos botões na tela
+        
         int position_buttons = 0;
         
         //For percorre a linha para preencher com botões
@@ -173,7 +207,7 @@ public class Client extends JFrame{
         
         try {
         
-            socket = new Socket("10.100.15.206", 1478);
+            socket = new Socket("10.100.15.208", 1478);
             outputStream = socket.getOutputStream();
             //objectOutputStream = new ObjectOutputStream(outputStream);
             //objectOutputStream.flush();
@@ -250,10 +284,22 @@ public class Client extends JFrame{
             if(bfr.ready()){
                 msg = bfr.readLine();
                 
-                if(msg.equals("X ganhou") || msg.equals("O ganhou")){
-                    JLabel lblMessage = new JLabel(msg);
+                
+                if(msg.contains("Xganhou")){
+                    String[] splited = msg.split("_");
+                    String placarx = "X: " + splited[1];
+                    //System.out.println(msg);
+                    this.placarX.setText(placarx);
+                    JLabel lblMessage = new JLabel("X ganhou");
                     JOptionPane.showMessageDialog(null, lblMessage);
                     limpar();
+                }else if(msg.contains("Oganhou")){
+                    String[] splited = msg.split("_");
+                    String placaro = "O: " + splited[1];
+                    this.placarO.setText(placaro);
+                    JLabel lblMessage = new JLabel("O ganhou");
+                    JOptionPane.showMessageDialog(null, lblMessage);
+                    limpar();            
                 }else if(msg.equals("Empate")){
                     JLabel lblMessage = new JLabel(msg);
                     JOptionPane.showMessageDialog(null, lblMessage);
@@ -272,7 +318,7 @@ public class Client extends JFrame{
                     System.out.println(simboloo);              
 
                     buttons[positionButton].setText(simboloo);
-                    jogador_atual.setText(jogador);
+                    ultimo_jogador.setText(jogador);
                 }
                 
                 if(msg.equals("Sair")){

@@ -58,6 +58,9 @@ public class Servidor extends Thread{
     
     private String last_player = "";
     
+    private int vitoria_X = 0;
+    private int vitoria_O = 0;
+    
     public Servidor(Socket s){
         this.connection = s;
         try{
@@ -144,8 +147,7 @@ public class Servidor extends Thread{
                     sendToAll(bfw, msg_enviar);
                     clicks_positions[positionButton] = true;
                     jogadas[positionButton] = jogador;
-                    simbolos[positionButton] = simboloo;
-                                   
+                    simbolos[positionButton] = simboloo;               
                                      
                     
                     checkWinner();
@@ -188,9 +190,11 @@ public class Servidor extends Thread{
             || simbolos[6].equals("X") && simbolos[7].equals("X") && simbolos[8].equals("X")
             || simbolos[2].equals("X") && simbolos[4].equals("X") && simbolos[6].equals("X")){
             
-            System.out.println("X ganhou");
+            
+            vitoria_X ++;
+            System.out.println("X ganhou" + "_" + vitoria_X);
             clearClicks();
-            sendToAll(null, "X ganhou");
+            sendToAll(null, "Xganhou" + "_" + vitoria_X);
         }
         
         else if(simbolos[0].equals("O") && simbolos[3].equals("O") && simbolos[6].equals("o")
@@ -202,9 +206,11 @@ public class Servidor extends Thread{
             || simbolos[6].equals("O") && simbolos[7].equals("O") && simbolos[8].equals("O")
             || simbolos[2].equals("O") && simbolos[4].equals("O") && simbolos[6].equals("O")){
             
-            System.out.println("O ganhou");
+            
+            vitoria_O++;
+            System.out.println("O ganhou" + "_" + vitoria_O);
             clearClicks();
-            sendToAll(null, "O ganhou");
+            sendToAll(null, "Oganhou" + "_" + vitoria_O);
         }
         
         else if(count == 9){
