@@ -82,7 +82,7 @@ public class Servidor extends Thread{
         try {
             
             /*Cria um novo socket com a porta, depois instancia um arraylist de BufferedWriter
-            isso serve para guardar os BufferedWriters de cada cliente que se conctar
+            isso serve para guardar os BufferedWriters de cada cliente que se conectar
             para depois mandar alguma mensagem para eles*/
             server = new ServerSocket(1478);
             clients = new ArrayList<>(2);  
@@ -123,7 +123,7 @@ public class Servidor extends Thread{
     public void run(){
         
         try{
-
+            Boolean trocar = false;
             String msg;
             String[] args;
             String msg_enviar;
@@ -142,7 +142,7 @@ public class Servidor extends Thread{
             /*Essas duas verificações é para quando o cliente se conecta. Ele envia uma mensagem
             dizendo qual o simbolo escolheu. Se o simbolo for "X", por exemplo
             ele diz que o X já está online e verifica se já possui um "O" online*/
-            if(msg.equals("X")){
+            if(msg.equals("X") && !X_on){
                 System.out.println("X entrou");
                 X_on = true;
                 
@@ -157,7 +157,7 @@ public class Servidor extends Thread{
                     sendToAll(null, "Pronto");
                 }
                 
-            }else if(msg.equals("O")){
+            }else if(msg.equals("O") && !O_on){
                 System.out.println("O entrou");
                 O_on = true;
                 
@@ -166,6 +166,21 @@ public class Servidor extends Thread{
                     bfw.write("Aguarde" + "\r");
                     bfw.flush();
                 }else if(X_on && O_on){
+                    sendToAll(null, "Pronto");
+                }
+            }else{
+                // Lógica para caso o 2º jogador escolhe o símbolo que já foi escolhido anteriormente
+                if(X_on){
+                    sendToLast(null, "Reinicio_x");
+                    msg = "O";
+                    O_on = true;
+                    
+                    sendToAll(null, "Pronto");
+                }else{
+                    sendToLast(null, "Reinicio_o");
+                    msg = "X";
+                    X_on = true;
+                    
                     sendToAll(null, "Pronto");
                 }
             }         
@@ -182,7 +197,6 @@ public class Servidor extends Thread{
                 int positionButton = Integer.parseInt(args[2]);               
                 String jogador = args[0];                
                 String simboloo = args[1];
-                
                 /*Aqui verifica se a posição clicada já foi clicada antes, se for falso
                 ele entra e dentro ele seta como true, sinalizando que aquele botão já foi pressionado
                 e não permite pressionar de novo*/                           
@@ -226,8 +240,17 @@ public class Servidor extends Thread{
         
     }
     
-    public void sendToAll(BufferedWriter bwExit, String msg) throws  IOException{
+    
+    // Manda mensagem pro último jogador conectado
+    public void sendToLast(BufferedWriter bwExit, String msg) throws  IOException{
+        BufferedWriter bw = new BufferedWriter(clients.get(clients.size() - 1));
         
+        bw.write(msg + "\r");
+        bw.flush();
+    }
+    
+    public void sendToAll(BufferedWriter bwExit, String msg) throws  IOException{
+       
         //BufferedWriter bwE;
 
         //Percorre todos os BufferedWriters dos clientes e envia uma mensagem para todos eles

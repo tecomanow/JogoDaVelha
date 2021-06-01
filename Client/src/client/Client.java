@@ -38,14 +38,23 @@ public class Client extends JFrame{
     private static OutputStream outputStream;
     //private static ObjectOutputStream objectOutputStream;
     
+    // Mostrar o símbolo escolhido pelo jogador
+    private boolean x = false;
+    private boolean o = false;
+    private String last_symbol = "";
+    
     private Socket socket;
     private OutputStream ou ;
     private Writer ouw;
     private BufferedWriter bfw;
     
+    // Mostra o jogador da janela que foi selecionada
+    private JLabel atual_jogador = new JLabel("");
     private String nome_jogador;
     private String simbolo;
     
+    JButton btn_x = new JButton("X");
+    JButton btn_o = new JButton("O");
     private JButton[] buttons = new JButton[9];
     private JLabel ultimo_jogador = new JLabel("Nenhum jogador");
     
@@ -68,26 +77,42 @@ public class Client extends JFrame{
         JLabel lblMessage = new JLabel("Olá, insira seu nome :D");
         JTextField txtNome = new JTextField("");
         //JTextField txtSimbolo = new JTextField("");
-        JButton btn_x = new JButton("X");
-        JButton btn_o = new JButton("O");
+//        JButton btn_x = new JButton("X");
+//        JButton btn_o = new JButton("O");
+//        
         
+//        if(x){
+//            btn_x.setEnabled(false);
+//        }else if(o){
+//           btn_o.setEnabled(false); 
+//        }
+//        
         btn_x.addActionListener((ActionEvent ae) -> {
             System.out.println(btn_x.getText());
+            last_symbol = btn_x.getText();   // Guarda o último símbolo selecionado
             btn_x.setEnabled(false);
-            btn_o.setEnabled(true);
+//            if(!o){
+//                btn_o.setEnabled(true);
+//            }            
             this.simbolo = "X";
         });
         
         btn_o.addActionListener(((ae) -> {
             System.out.println(btn_o.getText());
+            last_symbol = btn_o.getText();  // Guarda o último símbolo selecionado
             btn_o.setEnabled(false);
-            btn_x.setEnabled(true);
+//            if(!x){
+//                btn_x.setEnabled(true);
+//            }
             this.simbolo = "O";
         }));
         
         Object[] texts = {lblMessage, txtNome, btn_x, btn_o };
         JOptionPane.showMessageDialog(null, texts);
         this.nome_jogador = txtNome.getText();
+        
+        // Mostra o jogador atual e o símbolo que ele escolheu
+        atual_jogador.setText(this.nome_jogador + " - " + last_symbol); 
         //this.simbolo = "X";
         //System.out.println(txtNome.getText());
         
@@ -97,23 +122,30 @@ public class Client extends JFrame{
         setLayout(null);
         setBounds(300,300,800,500);
         
+        // Label para mostrar o jogador + símbolo
+        JLabel textAtual = new JLabel("Jogador:");
+        add(textAtual);
+        add(atual_jogador);
+        textAtual.setBounds(400,50,100,30);
+        atual_jogador.setBounds(400,75,100,30);
+        
         JLabel textJogador = new JLabel("Ultimo jogador:");
         add(textJogador);
         add(ultimo_jogador);
-        textJogador.setBounds(400,50,100,30);
-        ultimo_jogador.setBounds(400, 75, 100, 30);
+        textJogador.setBounds(400,125,100,30);
+        ultimo_jogador.setBounds(400, 150, 100, 30);
         
         JLabel textPlacar = new JLabel("Placar");
         add(textPlacar);
-        textPlacar.setBounds(400, 125, 100, 30);
+        textPlacar.setBounds(400, 200, 100, 30);
         
         
         add(placarX);
-        placarX.setBounds(400, 150, 100, 30);
+        placarX.setBounds(400, 225, 100, 30);
                  
         
         add(placarO);
-        placarO.setBounds(480, 150, 100, 30);
+        placarO.setBounds(480, 225, 100, 30);
 
         //Variável para definir a posição dos botões na tela
         
@@ -218,7 +250,7 @@ public class Client extends JFrame{
         
         try {
         
-            socket = new Socket("10.100.15.208", 1478);
+            socket = new Socket("127.0.0.1", 1478);
             outputStream = socket.getOutputStream();
             ouw = new OutputStreamWriter(outputStream);
             bfw = new BufferedWriter(ouw);
@@ -266,7 +298,19 @@ public class Client extends JFrame{
                     JLabel lblMessage = new JLabel("Aguardando próximo jogador!");
                     JOptionPane.showMessageDialog(null, lblMessage);
                     lblMessageAguarde.setBounds(100, 300, 200, 100);
-                    add(lblMessageAguarde);
+                    add(lblMessageAguarde);                                                   // =-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-
+                }else if(msg.equals("Reinicio_x")){                                           // Caso o 2º jogador tenha escolhido X mesmo o 1º já tendo escolhido
+                    JLabel lblMessage = new JLabel("Símbolos iguais, seu símbolo será: O");   //
+                    JOptionPane.showMessageDialog(null, lblMessage);                          //
+                    simbolo = "O";                                                            // Troca o símbolo para o O   
+                    atual_jogador.setText(this.nome_jogador + " - " + simbolo);               // Altera o símbolo na interface
+                    clear();                                                                  // =-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-
+                }else if(msg.equals("Reinicio_o")){                                           // Caso o 2º jogador tenha escolhido O mesmo o 1º já tendo escolhido
+                    JLabel lblMessage = new JLabel("Símbolos iguais, seu símbolo será: X");   //
+                    JOptionPane.showMessageDialog(null, lblMessage);                          //
+                    simbolo = "X";                                                            // Troca o símbolo para o X   
+                    atual_jogador.setText(this.nome_jogador + " - " + simbolo);               // Altera o símbolo na interface
+                    clear();                                                                  // =-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-
                 }else if(msg.equals("Pronto")){
                     lblMessageAguarde.setText("");
                 }else if(msg.contains("Xganhou")){
