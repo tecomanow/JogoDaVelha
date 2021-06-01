@@ -53,6 +53,15 @@ public class Client extends JFrame{
     private JLabel placarO = new JLabel("O: 0");
     /*private JLabel placarX_valor = new JLabel("2");
     private JLabel placarO_valor = new JLabel("3");*/
+    private JLabel lblMessageAguarde = new JLabel("Aguardando próximo jogador!");
+    
+    /*CRIAR VARIÁVEL BOOLEAN PARA VERIFICAR SE O OUTRO USER JA SE CONECTOU
+    ESSA VARIAVEL STARTA COM FALSE, E MUDA PARA TRUE QUANDO A MSG RECEBIDA FOR "PRONTO"
+    
+    FAZER A VERIFICAÇÃO AO CLICAR COM O BOTÃO DO JOGO, ANTES DE ENVIAR A MENSAGEM
+    COM A POSIÇÃO DO CLICK. ISSO IMPEDE DE JOGAR ANTES DO SEGUNDO JOGADOR COMEÇAR*/
+    
+    /*FALTA VERIFICAR SE O X OU SE O JÁ FOI ESCULHIDO, PARA NÃO PERMITIR QUE O OUTRO ESCOLHA TAMBÉM*/
     
     public Client(){
         
@@ -64,13 +73,15 @@ public class Client extends JFrame{
         
         btn_x.addActionListener((ActionEvent ae) -> {
             System.out.println(btn_x.getText());
-            btn_o.setEnabled(false);
+            btn_x.setEnabled(false);
+            btn_o.setEnabled(true);
             this.simbolo = "X";
         });
         
         btn_o.addActionListener(((ae) -> {
             System.out.println(btn_o.getText());
-            btn_x.setEnabled(false);
+            btn_o.setEnabled(false);
+            btn_x.setEnabled(true);
             this.simbolo = "O";
         }));
         
@@ -122,7 +133,7 @@ public class Client extends JFrame{
         
         buttons[0].addActionListener((ActionEvent ae) -> {
             try {
-                enviarMensagem("0", 0);
+                sendMessage("0", 0);
             } catch (IOException ex) {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -130,7 +141,7 @@ public class Client extends JFrame{
         
         buttons[1].addActionListener((ActionEvent ae) -> {
             try {
-                enviarMensagem("1", 1);
+                sendMessage("1", 1);
             } catch (IOException ex) {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -138,7 +149,7 @@ public class Client extends JFrame{
         
         buttons[2].addActionListener((ActionEvent ae) -> {
             try {
-                enviarMensagem("2", 2);
+                sendMessage("2", 2);
             } catch (IOException ex) {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -146,7 +157,7 @@ public class Client extends JFrame{
         
         buttons[3].addActionListener((ActionEvent ae) -> {
             try {
-                enviarMensagem("3", 3);
+                sendMessage("3", 3);
             } catch (IOException ex) {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -154,7 +165,7 @@ public class Client extends JFrame{
         
         buttons[4].addActionListener((ActionEvent ae) -> {
             try {
-                enviarMensagem("4", 4);
+                sendMessage("4", 4);
             } catch (IOException ex) {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -162,7 +173,7 @@ public class Client extends JFrame{
         
         buttons[5].addActionListener((ActionEvent ae) -> {
             try {
-                enviarMensagem("5", 5);
+                sendMessage("5", 5);
             } catch (IOException ex) {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -170,7 +181,7 @@ public class Client extends JFrame{
         
         buttons[6].addActionListener((ActionEvent ae) -> {
             try {
-                enviarMensagem("6", 6);
+                sendMessage("6", 6);
             } catch (IOException ex) {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -178,7 +189,7 @@ public class Client extends JFrame{
         
         buttons[7].addActionListener((ActionEvent ae) -> {
             try {
-                enviarMensagem("7", 7);
+                sendMessage("7", 7);
             } catch (IOException ex) {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -186,7 +197,7 @@ public class Client extends JFrame{
         
         buttons[8].addActionListener((ActionEvent ae) -> {
             try {
-                enviarMensagem("8", 8);
+                sendMessage("8", 8);
             } catch (IOException ex) {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -199,7 +210,7 @@ public class Client extends JFrame{
         
         Client c = new Client();
         c.connect();
-        c.escutar();
+        c.listen();
         
     }
     
@@ -209,31 +220,20 @@ public class Client extends JFrame{
         
             socket = new Socket("10.100.15.208", 1478);
             outputStream = socket.getOutputStream();
-            //objectOutputStream = new ObjectOutputStream(outputStream);
-            //objectOutputStream.flush();
             ouw = new OutputStreamWriter(outputStream);
             bfw = new BufferedWriter(ouw);
-            // objectOutputStream = new ObjectOutputStream(outputStream);
-            //objectOutputStream.flush();
-            //bfw.write("Olá servidor");
+            System.out.println("Conectou");
+            
+            ouw.write(simbolo + "\r");
             bfw.flush();
-            
-            //objectOutputStream.writeObject("Olá servidor");
-            //objectOutputStream.close();
-            //clientSocket.close(); 
-            //String msg = "Olá servidor";
-            //enviarMensagem(msg);
-            
-       
+    
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
         
     }
     
-    public void enviarMensagem(String msg, int position) throws IOException{
-        
-        //bfw.write(msg);
+    public void sendMessage(String msg, int position) throws IOException{
         
         String jogador_atual = nome_jogador;
         String simbolo_atual = simbolo;
@@ -241,81 +241,63 @@ public class Client extends JFrame{
         
         String enviar = jogador_atual + "_" + simbolo_atual + "_" + posicao;
         
-        //Jogada j = new Jogada();
-        //j.setNome_jogador(nome_jogador);
-        //j.setPosicao_click(position);
-        //j.setSimbolo(simbolo);
-        
-        //objectOutputStream.writeObject(j);
-        //objectOutputStream.flush();
-        
         bfw.write(enviar + "\r");
-        bfw.flush();
-        
-        /*if(msg.equals("Sair")){
-          bfw.write("Desconectado \r\n");
-          //texto.append("Desconectado \r\n");
-        }else{
-          
-          //texto.append( txtNome.getText() + " diz -> " +         txtMsg.getText()+"\r\n");
-        }
-         
-         //txtMsg.setText("");*/
-        
+        bfw.flush();      
         
     }
     
-    public void escutar() throws IOException, ClassNotFoundException{
+    public void listen() throws IOException, ClassNotFoundException{
 
         InputStream in = socket.getInputStream();
         InputStreamReader inr = new InputStreamReader(in);
         BufferedReader bfr = new BufferedReader(inr);
-        //ObjectInputStream oin = new ObjectInputStream(in);
+
         String msg = "";
-        String[] args;
-        
-        //Jogada jogada = (Jogada)ObjectInputStream.readO;
-        //msg = bfr.readLine();
-        //System.out.println(msg);  
-        
+        String[] args;       
         
         while(!"Sair".equalsIgnoreCase(msg)){
             
             if(bfr.ready()){
                 msg = bfr.readLine();
                 
-                
-                if(msg.contains("Xganhou")){
+                //System.out.println(msg);
+
+                if(msg.equals("Aguarde")){
+                    JLabel lblMessage = new JLabel("Aguardando próximo jogador!");
+                    JOptionPane.showMessageDialog(null, lblMessage);
+                    lblMessageAguarde.setBounds(100, 300, 200, 100);
+                    add(lblMessageAguarde);
+                }else if(msg.equals("Pronto")){
+                    lblMessageAguarde.setText("");
+                }else if(msg.contains("Xganhou")){
                     String[] splited = msg.split("_");
                     String placarx = "X: " + splited[1];
                     //System.out.println(msg);
                     this.placarX.setText(placarx);
                     JLabel lblMessage = new JLabel("X ganhou");
                     JOptionPane.showMessageDialog(null, lblMessage);
-                    limpar();
+                    clear();
                 }else if(msg.contains("Oganhou")){
                     String[] splited = msg.split("_");
                     String placaro = "O: " + splited[1];
                     this.placarO.setText(placaro);
                     JLabel lblMessage = new JLabel("O ganhou");
                     JOptionPane.showMessageDialog(null, lblMessage);
-                    limpar();            
+                    clear();            
                 }else if(msg.equals("Empate")){
                     JLabel lblMessage = new JLabel(msg);
                     JOptionPane.showMessageDialog(null, lblMessage);
-                    limpar();
+                    clear();
+                }else if(msg.equals("Não é sua vez!")){
+                    JLabel lblMessage = new JLabel("Não é a sua vez. Aguarde!");
+                    JOptionPane.showMessageDialog(null, lblMessage);
+                    System.out.println(msg); 
                 }else{
-                    System.out.println(msg);
 
                     args = msg.split("_");
                     int positionButton = Integer.parseInt(args[2]);
-                    System.out.println(args[2]);
-
                     String jogador = args[0];
-                    System.out.println(jogador);
-
-                    String simboloo = args[1];
-                    System.out.println(simboloo);              
+                    String simboloo = args[1];            
 
                     buttons[positionButton].setText(simboloo);
                     ultimo_jogador.setText(jogador);
@@ -332,16 +314,16 @@ public class Client extends JFrame{
          
     }
     
-    public void sair() throws IOException{
+    public void exit() throws IOException{
 
-        enviarMensagem("Sair", 0);
+        sendMessage("Sair", 0);
         bfw.close();
         ouw.close();
         ou.close();
         socket.close();
     }
 
-    private void limpar() {
+    private void clear() {
         for(int i = 0; i < 9; i++){
             buttons[i].setText("");            
         }
