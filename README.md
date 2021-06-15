@@ -27,12 +27,12 @@ Podem ser recebidas 10 tipos de mensagens
 ### 1.4 Exit
 Método responsável por informar a desconexão do cliente com o servidor.
 ### 1.5 Clear 
-Método responsável por definir todos os botões para o valor nulo, indicando que o jogo está 	no início.
+Método responsável por definir todos os botões para o valor nulo, indicando que o jogo está no início.
 ## 2. Servidor
 Na pasta servidor encontra-se a classe servidor.\
-Na classe servidor são salvas as mensagens recebidas para definir uma conexão com os 	clientes.\
-A classe também é responsável pela criação do socket com a porta para a comunicação entre 	os clientes. \
-Antes de se iniciar o jogo a classe verifica a conexão com os clientes e não permite a 	conexão de mais que dois clientes e define todos os botões dos clientes como nulos, não 	selecionados.\
+Na classe servidor são salvas as mensagens recebidas para definir uma conexão com os clientes.\
+A classe também é responsável pela criação do socket com a porta para a comunicação entre os clientes, pela definição da lógica utilizada e análise das jogadas feitas.\
+Antes de se iniciar o jogo a classe verifica a conexão com os clientes e não permite a conexão de mais que dois clientes e define todos os botões dos clientes como nulos, não selecionados.\
 A classe servidor possui cinco métodos:
 ### 2.1 Run
 Este método é responsável por instanciar e interpretar as mensagens dos clientes e salvar em 	uma lista para futuras consultas.\
