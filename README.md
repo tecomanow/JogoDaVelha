@@ -47,6 +47,19 @@ Este método é responsável por enviar uma mensagem para todos os jogadores con
 ### 2.4 CheckWinner
 Método responsável pela verificação do ganhador.\
 Verifica as possibilidades de vitória para ambos símbolos, caso haja um vencedor envia uma 	mensagem informando o ganhador.\
-Verifica se os nove botões já foram selecionados, caso positivo e nenhum vencedor ainda 	definido, determina empate.
+Verifica se os nove botões já foram selecionados, caso positivo e nenhum vencedor ainda definido, determina empate.
 ### 2.5 ClearClicks
-Método responsável por limpar as jogadas, determinando todos os botões como não 	selecionados.
+Método responsável por limpar as jogadas, determinando todos os botões como não selecionados.
+## 3 Screenshots
+Na pasta Screenshots encontram-se algumas imagens da interface do jogo e mensagens que podem ser apresentadas.\
+Na seguinte imagem os dois jogadores já se conectaram e fizeram sua primeira jogada:
+
+![Primeira Rodada](/Screenshots/jogo-da-velha.png)
+
+Na imagem a seguir o jogador João já tinha feito sua jogada e tentou jogar novamente:
+
+![Segunda Rodada](/Screenshots/jogo-da-velha-1.png)
+
+Abaixo temos o resultado do jogo:
+
+![Rodada Final](/Screenshots/jogo-da-velha-2.png)
