@@ -6,6 +6,7 @@
 package client;
 
 import com.sun.security.ntlm.Server;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -30,6 +31,8 @@ import javax.swing.*;
  * @author MateusR
  */
 public class Client extends JFrame{
+    
+    JFrame jframe = new JFrame();
 
     /**
      * @param args the command line arguments
@@ -75,11 +78,17 @@ public class Client extends JFrame{
     public Client(){
         
         JLabel lblMessage = new JLabel("Olá, insira seu nome :D");
+        lblMessage.setForeground(Color.BLACK);
         JTextField txtNome = new JTextField("");
+        
+        btn_x.setForeground(Color.RED);
+        btn_o.setForeground(Color.BLUE);
         //JTextField txtSimbolo = new JTextField("");
 //        JButton btn_x = new JButton("X");
 //        JButton btn_o = new JButton("O");
 //        
+   
+//        btn_x.setBackground(Color.CYAN);
         
 //        if(x){
 //            btn_x.setEnabled(false);
@@ -91,6 +100,7 @@ public class Client extends JFrame{
             System.out.println(btn_x.getText());
             last_symbol = btn_x.getText();   // Guarda o último símbolo selecionado
             btn_x.setEnabled(false);
+            btn_o.setEnabled(true);
 //            if(!o){
 //                btn_o.setEnabled(true);
 //            }            
@@ -101,6 +111,7 @@ public class Client extends JFrame{
             System.out.println(btn_o.getText());
             last_symbol = btn_o.getText();  // Guarda o último símbolo selecionado
             btn_o.setEnabled(false);
+            btn_x.setEnabled(true);
 //            if(!x){
 //                btn_x.setEnabled(true);
 //            }
@@ -112,7 +123,8 @@ public class Client extends JFrame{
         this.nome_jogador = txtNome.getText();
         
         // Mostra o jogador atual e o símbolo que ele escolheu
-        atual_jogador.setText(this.nome_jogador + " - " + last_symbol); 
+        
+        atual_jogador.setText(this.nome_jogador + " - " + last_symbol);
         //this.simbolo = "X";
         //System.out.println(txtNome.getText());
         
@@ -121,21 +133,33 @@ public class Client extends JFrame{
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(null);
         setBounds(300,300,800,500);
-        
+ 
         // Label para mostrar o jogador + símbolo
         JLabel textAtual = new JLabel("Jogador:");
+        textAtual.setForeground(Color.BLACK);
+        
+        if(last_symbol.equals("X")){
+            atual_jogador.setForeground(Color.RED);
+        }else{
+            atual_jogador.setForeground(Color.BLUE);
+        }
         add(textAtual);
         add(atual_jogador);
         textAtual.setBounds(400,50,100,30);
         atual_jogador.setBounds(400,75,100,30);
         
         JLabel textJogador = new JLabel("Ultimo jogador:");
+        textJogador.setForeground(Color.BLACK);
+        ultimo_jogador.setForeground(Color.GRAY);
         add(textJogador);
         add(ultimo_jogador);
         textJogador.setBounds(400,125,100,30);
         ultimo_jogador.setBounds(400, 150, 100, 30);
         
-        JLabel textPlacar = new JLabel("Placar");
+        JLabel textPlacar = new JLabel("Placar:");
+        textPlacar.setForeground(Color.BLACK);
+        placarX.setForeground(Color.RED);
+        placarO.setForeground(Color.BLUE);
         add(textPlacar);
         textPlacar.setBounds(400, 200, 100, 30);
         
@@ -304,12 +328,14 @@ public class Client extends JFrame{
                     JOptionPane.showMessageDialog(null, lblMessage);                          //
                     simbolo = "O";                                                            // Troca o símbolo para o O   
                     atual_jogador.setText(this.nome_jogador + " - " + simbolo);               // Altera o símbolo na interface
+                    atual_jogador.setForeground(Color.BLUE);
                     clear();                                                                  // =-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-
                 }else if(msg.equals("Reinicio_o")){                                           // Caso o 2º jogador tenha escolhido O mesmo o 1º já tendo escolhido
                     JLabel lblMessage = new JLabel("Símbolos iguais, seu símbolo será: X");   //
                     JOptionPane.showMessageDialog(null, lblMessage);                          //
                     simbolo = "X";                                                            // Troca o símbolo para o X   
                     atual_jogador.setText(this.nome_jogador + " - " + simbolo);               // Altera o símbolo na interface
+                    atual_jogador.setForeground(Color.RED);
                     clear();                                                                  // =-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-
                 }else if(msg.equals("Pronto")){
                     lblMessageAguarde.setText("");
@@ -320,6 +346,8 @@ public class Client extends JFrame{
                     this.placarX.setText(placarx);
                     JLabel lblMessage = new JLabel("X ganhou");
                     JOptionPane.showMessageDialog(null, lblMessage);
+                    ultimo_jogador.setText("Nenhum jogador");
+                    ultimo_jogador.setForeground(Color.GRAY);
                     clear();
                 }else if(msg.contains("Oganhou")){
                     String[] splited = msg.split("_");
@@ -327,6 +355,8 @@ public class Client extends JFrame{
                     this.placarO.setText(placaro);
                     JLabel lblMessage = new JLabel("O ganhou");
                     JOptionPane.showMessageDialog(null, lblMessage);
+                    ultimo_jogador.setText("Nenhum jogador");
+                    ultimo_jogador.setForeground(Color.GRAY);
                     clear();            
                 }else if(msg.equals("Empate")){
                     JLabel lblMessage = new JLabel(msg);
@@ -344,6 +374,13 @@ public class Client extends JFrame{
                     String simboloo = args[1];            
 
                     buttons[positionButton].setText(simboloo);
+                    
+                    System.out.println(simboloo);
+                    if(simboloo.equals("X")){
+                        ultimo_jogador.setForeground(Color.RED);
+                    }else{
+                        ultimo_jogador.setForeground(Color.BLUE);
+                    }
                     ultimo_jogador.setText(jogador);
                 }
                 
