@@ -20,10 +20,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import javax.print.DocFlavor;
-import client.Jogada;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 /**
  *
  * @author MateusR
@@ -35,27 +31,21 @@ public class Servidor extends Thread{
      */
    
     
-    //Declaring streams to use by server
+    //Declarando streams usados pelo servidor
     private static ArrayList<BufferedWriter> clients;
-    private static ArrayList<Jogada> jogadas_obg;
     private static ServerSocket server;
-    private String name;
     private Socket connection;
     private InputStream in;
     private InputStreamReader inreader;
     private BufferedReader bfreader;
-    //private ObjectInputStream objectInputStream;
-  
-    
+
     private static boolean X_on = false;
     private static boolean O_on = false;
-    //private String jogador = "Jogador 2_X";
-    //private String simbolo = "O";
     
-    private static boolean[] clicks_positions = new boolean[9];
-    private static String[] jogadas = new String[9];
-    private static String[] simbolos = new String[9];
-    private static String[] jogadores = new String[9];
+    private static final boolean[] clicks_positions = new boolean[9];
+    private static final String[] jogadas = new String[9];
+    private static final String[] simbolos = new String[9];
+    private static final String[] jogadores = new String[9];
     
     private static String last_player = "";
     
@@ -68,8 +58,7 @@ public class Servidor extends Thread{
            
             in = s.getInputStream();
             inreader = new InputStreamReader(in);
-            bfreader = new BufferedReader(inreader);
-            //objectInputStream = new ObjectInputStream(in);
+            bfreader = new BufferedReader(inreader);           
             
         }catch (IOException e){
             System.out.println("Error: " + e.getMessage());
@@ -77,7 +66,6 @@ public class Servidor extends Thread{
     }
     
     public static void main(String[] args) {
-        // TODO code application logic here
         
         try {
             
@@ -123,7 +111,7 @@ public class Servidor extends Thread{
     public void run(){
         
         try{
-            Boolean trocar = false;
+            
             String msg;
             String[] args;
             String msg_enviar;
@@ -215,13 +203,15 @@ public class Servidor extends Thread{
                         //Seta que o botão já foi pressionado
                         clicks_positions[positionButton] = true;
                         jogadas[positionButton] = jogador;
-                        simbolos[positionButton] = simboloo;               
+                        simbolos[positionButton] = simboloo;   
+                        
+                        //Seta o novo ultimo jogador, para controlar de quem é a vez
+                        last_player = simboloo;
 
                         //Veritica se alguém ganhou com a jogada
                         checkWinner();
                         
-                        //Seta o novo ultimo jogador, para controlar de quem é a vez
-                        last_player = simboloo;
+                        
                         
                 }else{
                     //Sinaliza que o jogador está tentando jogar de novo e não faz nada
@@ -284,9 +274,12 @@ public class Servidor extends Thread{
             || simbolos[6].equals("X") && simbolos[7].equals("X") && simbolos[8].equals("X")
             || simbolos[2].equals("X") && simbolos[4].equals("X") && simbolos[6].equals("X")){
             
-            //Conta quantas vezes o X ganhou
-            vitoria_X ++;
+            //Incrementa a vítória para o 'X'
+            vitoria_X ++;        
             System.out.println("X ganhou" + "_" + vitoria_X);
+            
+            //Diz que o último jogador foi o 'O' para assim ser a vez do 'X' novamente, que foi o ganhador
+            last_player = "O";
             
             //Se o X ganhou, reseta as posições dos botões para permitir ser pressionado novamente
             clearClicks();
@@ -303,9 +296,13 @@ public class Servidor extends Thread{
             || simbolos[6].equals("O") && simbolos[7].equals("O") && simbolos[8].equals("O")
             || simbolos[2].equals("O") && simbolos[4].equals("O") && simbolos[6].equals("O")){
             
-            
+            //Incrementa a vítória para o 'O'
             vitoria_O++;
             System.out.println("O ganhou" + "_" + vitoria_O);
+            
+            //Diz que o último jogador foi o 'X' para assim ser a vez do 'O' novamente, que foi o ganhador
+            last_player = "X";
+            
             clearClicks();
             sendToAll(null, "Oganhou" + "_" + vitoria_O);
         }

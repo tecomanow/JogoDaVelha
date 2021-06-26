@@ -42,8 +42,8 @@ public class Client extends JFrame{
     //private static ObjectOutputStream objectOutputStream;
     
     // Mostrar o símbolo escolhido pelo jogador
-    private boolean x = false;
-    private boolean o = false;
+    private final boolean x = false;
+    private final boolean o = false;
     private String last_symbol = "";
     
     private Socket socket;
@@ -52,20 +52,20 @@ public class Client extends JFrame{
     private BufferedWriter bfw;
     
     // Mostra o jogador da janela que foi selecionada
-    private JLabel atual_jogador = new JLabel("");
-    private String nome_jogador;
+    private final JLabel atual_jogador = new JLabel("");
+    private final String nome_jogador;
     private String simbolo;
     
     JButton btn_x = new JButton("X");
     JButton btn_o = new JButton("O");
-    private JButton[] buttons = new JButton[9];
-    private JLabel ultimo_jogador = new JLabel("Nenhum jogador");
+    private final JButton[] buttons = new JButton[9];
+    private final JLabel ultimo_jogador = new JLabel("Nenhum jogador");
     
-    private JLabel placarX = new JLabel("X: 0");  
-    private JLabel placarO = new JLabel("O: 0");
+    private final JLabel placarX = new JLabel("X: 0");  
+    private final JLabel placarO = new JLabel("O: 0");
     /*private JLabel placarX_valor = new JLabel("2");
     private JLabel placarO_valor = new JLabel("3");*/
-    private JLabel lblMessageAguarde = new JLabel("Aguardando próximo jogador!");
+    private final JLabel lblMessageAguarde = new JLabel("Aguardando próximo jogador!");
     
     /*CRIAR VARIÁVEL BOOLEAN PARA VERIFICAR SE O OUTRO USER JA SE CONECTOU
     ESSA VARIAVEL STARTA COM FALSE, E MUDA PARA TRUE QUANDO A MSG RECEBIDA FOR "PRONTO"
@@ -101,9 +101,7 @@ public class Client extends JFrame{
             last_symbol = btn_x.getText();   // Guarda o último símbolo selecionado
             btn_x.setEnabled(false);
             btn_o.setEnabled(true);
-//            if(!o){
-//                btn_o.setEnabled(true);
-//            }            
+           
             this.simbolo = "X";
         });
         
@@ -112,9 +110,7 @@ public class Client extends JFrame{
             last_symbol = btn_o.getText();  // Guarda o último símbolo selecionado
             btn_o.setEnabled(false);
             btn_x.setEnabled(true);
-//            if(!x){
-//                btn_x.setEnabled(true);
-//            }
+
             this.simbolo = "O";
         }));
         
@@ -125,8 +121,6 @@ public class Client extends JFrame{
         // Mostra o jogador atual e o símbolo que ele escolheu
         
         atual_jogador.setText(this.nome_jogador + " - " + last_symbol);
-        //this.simbolo = "X";
-        //System.out.println(txtNome.getText());
         
         setVisible(true);
         setTitle("Jogo da Velha - Projeto Redes I");
@@ -171,8 +165,7 @@ public class Client extends JFrame{
         add(placarO);
         placarO.setBounds(480, 225, 100, 30);
 
-        //Variável para definir a posição dos botões na tela
-        
+        //Variável para definir a posição dos botões na tela        
         int position_buttons = 0;
         
         //For percorre a linha para preencher com botões
@@ -187,6 +180,7 @@ public class Client extends JFrame{
             }
         }
         
+        //Abaixo seta os eventos de clicks, onde envia a posição do botão clicado para o servidor
         buttons[0].addActionListener((ActionEvent ae) -> {
             try {
                 sendMessage("0", 0);
@@ -264,6 +258,7 @@ public class Client extends JFrame{
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         // TODO code application logic here
         
+        //Instancia um cliente e chama os métodos de conectar e de ouvir
         Client c = new Client();
         c.connect();
         c.listen();
@@ -314,9 +309,7 @@ public class Client extends JFrame{
         while(!"Sair".equalsIgnoreCase(msg)){
             
             if(bfr.ready()){
-                msg = bfr.readLine();
-                
-                //System.out.println(msg);
+                msg = bfr.readLine();               
 
                 if(msg.equals("Aguarde")){
                     JLabel lblMessage = new JLabel("Aguardando próximo jogador!");
