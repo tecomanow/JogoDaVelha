@@ -5,6 +5,7 @@
  */
 package servidor;
 
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -20,6 +21,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 /**
  *
  * @author MateusR
@@ -69,10 +73,17 @@ public class Servidor extends Thread{
         
         try {
             
+            //Cria um campo solicitando a porta para criar o servidor
+            JLabel lblMessage = new JLabel("Insira a porta do servidor");      
+            JTextField txt_porta = new JTextField("");
+            Object[] texts = {lblMessage, txt_porta}; // Armazena os componentes da tela inicial
+            JOptionPane.showMessageDialog(null, texts);            // Insere os componentes na tela e mostra eles
+            int porta = Integer.parseInt(txt_porta.getText().toString());
+            
             /*Cria um novo socket com a porta, depois instancia um arraylist de BufferedWriter
             isso serve para guardar os BufferedWriters de cada cliente que se conectar
             para depois mandar alguma mensagem para eles*/
-            server = new ServerSocket(1478);
+            server = new ServerSocket(porta);
             clients = new ArrayList<>(2);  
             
             //Aqui seta false para todas as posições dos botões no Cliente
@@ -87,7 +98,7 @@ public class Servidor extends Thread{
                 nenhum jogador se conectar*/
                 if(!X_on && !O_on){
                     Socket client = server.accept();
-                    System.out.println("Server is listening on port 1234");
+                    System.out.println("Server is listening");
                     
                     //Instancia e cria uma Thread
                     Thread clientes = new Servidor(client);
@@ -230,7 +241,6 @@ public class Servidor extends Thread{
         
     }
     
-    
     // Manda mensagem pro último jogador conectado
     public void sendToLast(BufferedWriter bwExit, String msg) throws  IOException{
         BufferedWriter bw = new BufferedWriter(clients.get(clients.size() - 1));
@@ -239,6 +249,7 @@ public class Servidor extends Thread{
         bw.flush();
     }
     
+    //Manda mensagem para todos os jogadores
     public void sendToAll(BufferedWriter bwExit, String msg) throws  IOException{
        
         //BufferedWriter bwE;

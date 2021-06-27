@@ -267,7 +267,18 @@ public class Client extends JFrame{
                                                         // Tenta conectar
         try {
         
-            socket = new Socket("127.0.0.1", 1478);     // Cria Socket no localhost, porta 1478
+            //Cria um campo solicitando o ip do servidor e a porta
+            JLabel lblMessage = new JLabel("Insira os dados do servidor");
+            JLabel lblip = new JLabel("Insira o ip"); 
+            JTextField txt_ip = new JTextField("");
+            JLabel lbporta = new JLabel("Insira a porta"); 
+            JTextField txt_porta = new JTextField("");
+            Object[] texts = {lblMessage, lblip,txt_ip, lbporta, txt_porta}; // Armazena os componentes da tela inicial
+            JOptionPane.showMessageDialog(null, texts);                     // Insere os componentes na tela e mostra eles
+            int porta = Integer.parseInt(txt_porta.getText().toString());
+            String ip = txt_ip.getText().toString();
+            
+            socket = new Socket(ip, porta);             // Cria Socket no localhost, porta 1478
             outputStream = socket.getOutputStream();    // Pega o fluxo de saída do socket e armazena
             ouw = new OutputStreamWriter(outputStream); // Adiciona o fluxo de saída do socket a uma ponte de fluxo de caracteres
             bfw = new BufferedWriter(ouw);              // Armazena esses caracteres em um Buffer de escrita                
