@@ -1,5 +1,5 @@
 # JogoDaVelha
-Este projeto foi feito como atividade avaliativa da matéria de Redes de Computadores ministrada pelo professor Jorge Lima na Universidade Estadual de Santa Cruz.
+Este projeto foi desenvolvido em Java como atividade avaliativa da matéria de Redes de Computadores ministrada pelo professor Jorge Lima na Universidade Estadual de Santa Cruz.
 
 O programa consiste em um jogo da velha onde os jogadores se comunicam com o auxílio do servidor, o protocolo de transporte utilizado para comunicação foi o TCP pois garante a entrega de todos os dados que estão sendo enviados, logo, ao fazer uma jogada é garantido que a resposta a essa escolha será visualizada por ambos jogadores.
 ## 1. Cliente 
